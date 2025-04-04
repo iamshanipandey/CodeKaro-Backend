@@ -1,6 +1,6 @@
 const Users = require("../models/Users");
 const mailSender = require("../utils/mailSender");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const {resetPasswordEmail, resetPasswordConfirmationEmail} = require("../emailTemplates/otpEmail")
 
 
