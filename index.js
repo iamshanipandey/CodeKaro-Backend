@@ -5,7 +5,6 @@ const userRoutes = require("./routes/User");
 const profileRoutes = require("./routes/Profile");
 const paymentRoutes = require("./routes/Payments");
 const courseRoutes = require("./routes/Course");
-const contactFormRoute = require("./routes/ContactForm")
 
 const database = require("./config/database");
 const cookieParser = require("cookie-parser");
@@ -25,7 +24,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
     cors({
-        origin: "http://localhost:3000",
+        origin: "https://code-karo-front-end.vercel.app/",
         credentials: true,
     })
 )
