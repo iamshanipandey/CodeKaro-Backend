@@ -5,9 +5,6 @@ const Users = require("../models/Users");
 const mailSender = require("../utils/mailSender")
 const {newCourseEmailTemplate, paymentConfirmationEmail} = require("../emailTemplates/newCourseEmailTemplate")
 const crypto = require("crypto");
-const { LuEthernetPort } = require("react-icons/lu");
-
-
 
 exports.capturePayment = async (req, res)=>{
     try
