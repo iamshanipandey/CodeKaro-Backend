@@ -22,12 +22,18 @@ database.connect();
 //Middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://code-karo-front-end.vercel.app",
+  ];
+  
+  app.use(
     cors({
-        origin: "https://code-karo-front-end.vercel.app/",
-        credentials: true,
+      origin: allowedOrigins,
+      credentials: true,
     })
-)
+  );
+  
 app.use(
     fileUpload({
         useTempFiles: true,
