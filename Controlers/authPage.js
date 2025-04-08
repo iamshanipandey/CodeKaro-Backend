@@ -2,7 +2,7 @@ const Users = require("../models/Users");
 const Otp = require("../models/Otp");
 const OtpGenerator = require("otp-generator");
 const Profile = require("../models/Profile");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 dotenv.config();
@@ -212,7 +212,7 @@ exports.logIn = async (req, res)=>
         }
     
 
-        const user = await Users.findOne({email}).populate("additionalDetails").exec(); // yah pe user me vo document pura send ho jayega jo email se match krega.. yani ki jis email se database me ye email match kega uss ka pura schema send kar dega.
+        const user = await Users.findOne({email}).populate("additionalDetails").populate("courseProgress").exec(); 
         
         if (!user)
             {

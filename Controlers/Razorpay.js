@@ -24,7 +24,7 @@ exports.capturePayment = async (req, res)=>{
         let totalAmount = 0;
         
         for ( const courseId of courses)
-        {
+        {   
             let course;
             try
             {
@@ -45,7 +45,6 @@ exports.capturePayment = async (req, res)=>{
                         message: "Already Enrolled",
                     })
                 }
-                
                 totalAmount = totalAmount + course.price;            
                
             }
@@ -56,6 +55,8 @@ exports.capturePayment = async (req, res)=>{
                     message: "Unable to find Course, Something went wrong",
                 })
             }
+        }
+
 
             const options = {
                 amount: totalAmount * 100, 
@@ -82,7 +83,7 @@ exports.capturePayment = async (req, res)=>{
                     error: error.message
                 })
             }
-        }
+        
 
     }
     catch(error)
@@ -107,7 +108,7 @@ exports.verifyPayment = async(req, res)=>{
 
         console.log("razorpay_order_id", razorpay_order_id, "razorpay_payment_id", razorpay_payment_id, "razorpay_signature", razorpay_signature, "courses", courses, "userId", userId )
         
-        if(!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !courses | !userId)
+        if(!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !courses || !userId)
         {
             return res.status(401).json({
                 success: false,
@@ -124,30 +125,38 @@ exports.verifyPayment = async(req, res)=>{
         {
             // Entroll Studnet
             const enrollmentResult = await enrollStudent(courses, userId);
-
+            console.log("signature verifeid")
             return res.status(200).json({
                 success: true,
                 message : "Payment Verified",
                 enrollmentData: enrollmentResult
             })
         }
+        else{
+            return res.status(500).json({
+                success: false,
+                message: "Unable to Verify Payment",
+            })
+        }
 
     }
-    catch(error)
-    {
+    catch(error) {
+        console.error("Payment verification error:", error);
         return res.status(500).json({
             success: false,
             message: "Unable to Verify Payment",
-        })
+        });
     }
 }
 
-const enrollStudent = async(courses, userId,  res)=>{
+const enrollStudent = async(courses, userId)=>{
 
     if(!courses || !userId)
     {
         throw new Error("All Fields are required");
     }
+
+    let enrollmentResults = [];
 
     for(const courseId of courses)
     {
@@ -163,23 +172,20 @@ const enrollStudent = async(courses, userId,  res)=>{
 
             if(updatedUser && updatedCourse && emailSend)
             {
-                return res.status(200).json({
-
-                    success: true,
-                    message: "Enrolled Successfully",
-                    data: updatedCourse, updatedUser,
-                })
+                enrollmentResults.push({
+                    updatedCourse,
+                });
             }
         }
         catch(error)
         {
-            return res.status(500).json({
-                success: false,
-                message: "Unable to Update Enrolled Course",
-            })
+            enrollmentResults.push({
+                updatedCourse,
+            });
         }
         
     }
+    return enrollmentResults;
 }
 
 //send successfully payment email

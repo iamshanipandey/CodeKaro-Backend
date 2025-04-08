@@ -1,7 +1,8 @@
 const Users = require("../models/Users");
 const mailSender = require("../utils/mailSender");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const {resetPasswordEmail, resetPasswordConfirmationEmail} = require("../emailTemplates/otpEmail")
+require("dotenv").config();
 
 
 
@@ -35,7 +36,7 @@ exports.resetPasswordLink = async (req, res)=>{
                                                         }
         )
 
-        const url = `http://localhost:3000/reset-password/${token}`;
+        const url = process.env.FRONTEND_URL+`/reset-password/${token}`;
         
         await mailSender(email,"body", url, resetPasswordEmail);
 

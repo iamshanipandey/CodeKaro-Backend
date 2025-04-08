@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const Category = require("../models/Category")
 const Course = require("../models/Course")
 const User = require("../models/Users")
+const CourseProgress = require("../models/CourseProgress")
 const {uploadImageToCloudinary} = require("../utils/imageUploader");
 require("dotenv").config();
 
@@ -426,3 +427,105 @@ exports.categoryCourse = async(req, res)=>{
         })
     }
 }
+
+// getEnrolledCourse
+
+exports.getEnrolledCourse = async(req, res)=>{
+    try
+    {
+        const {id} = req.user;
+
+        if(!id)
+        {
+            return res.status(401).json({
+                success: false,
+                message: "Unable to Find User",
+            })
+        }
+
+        const userDetails = await User.findById(id)
+                                                .populate({
+                                                    path:"courses",
+                                                    populate: {
+                                                        path: "courseContent",
+                                                        populate : {
+                                                            path: "subSection",
+                                                        }
+                                                    }
+                                                })
+        
+        return res.status(200).json({
+            success: true,
+            message: "Enrolled Courses Fetched Successfully",
+            enrolledCourses : userDetails.courses,
+        })
+    }
+    catch(error)
+    {
+        return res.status(500).json({
+            success: false,
+            message: "Unable to find Enrolled Courses",
+        })
+    }
+}
+
+
+// Controller to mark a subSection as completed
+// exports.markSubSectionAsComplete = async (req, res) => {
+//   try {
+//     const userId = req.user.id; // assuming you're using auth middleware to attach user
+//     const { courseId, subSectionId } = req.body;
+
+//     // Validate inputs
+//     if (!courseId || !subSectionId) {
+//       return res.status(400).json({ success: false, message: "All fields are required" });
+//     }
+
+//     // Get user
+//     const user = await User.findById(userId).populate("courseProgress");
+
+//     if (!user) {
+//       return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     // Check if CourseProgress already exists for this course
+//     let courseProgress = user.courseProgress.find((progress) =>
+//       progress.courseId.toString() === courseId
+//     );
+
+//     // If it doesn't exist, create new one
+//     if (!courseProgress) {
+//       const newCourseProgress = await CourseProgress.create({
+//         courseId,
+//         completedVideos: [subSectionId],
+//       });
+
+//       user.courseProgress.push(newCourseProgress._id);
+//       await user.save();
+
+//       return res.status(200).json({
+//         success: true,
+//         message: "Progress created and subSection marked as complete",
+//       });
+//     }
+
+//     // If already exists, check if this subSection is already marked complete
+//     if (!courseProgress.completedVideos.includes(subSectionId)) {
+//       courseProgress.completedVideos.push(subSectionId);
+//       await courseProgress.save();
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "SubSection marked as complete",
+//     });
+//   } catch (error) {
+//     console.error("Error marking subSection complete:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Something went wrong, please try again",
+//     });
+//   }
+// };
+
+

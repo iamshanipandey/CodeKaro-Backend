@@ -10,6 +10,8 @@ const {
     instructorCourse,
     deleteCourse,
     categoryCourse,
+    getEnrolledCourse,
+    // markSubSectionAsComplete
 } = require("../Controlers/course");
 
 const {
@@ -72,6 +74,10 @@ router.post("/publishCourse", auth, isInstructor, publishCourse);
 router.post("/getInstructorCourses", auth, isInstructor, instructorCourse);
 
 router.post("/categoryCourse", categoryCourse);
+
+router.post("/getEnrolledCoruses", auth, isStudent, getEnrolledCourse)
+
+// router.post("/markSubSectionAsComplete", auth, isStudent, markSubSectionAsComplete)
 
 
 //************************************************************************************************ */
